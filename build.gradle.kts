@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("fr.jhelp.kotlinLight:kotlinLight:0.0.1")
+    implementation("fr.jhelp.kotlinLight:kotlinLight:1.0.0")
     testImplementation(kotlin("test-junit5"))
 }
 
