@@ -36,19 +36,4 @@ class AtomicReference<T>
 
         return value
     }
-
-    fun compareAndSet(excepted: T?, newValue: T?): Boolean
-    {
-        var done = false
-
-        this.mutex.safeExecute {
-            if (this.value == excepted)
-            {
-                this.value = newValue
-                done = true
-            }
-        }
-
-        return done
-    }
 }

@@ -5,7 +5,7 @@ import fr.jhelp.kotlinLight.DispatchTime
 import fr.jhelp.kotlinLight.DispatchTimeInterval
 import fr.jhelp.kotlinLight.ImportSwift
 
-@ImportSwift("Dispatch")
+@ImportSwift("Foundation")
 
 fun launchTask(task: () -> Unit)
 {
