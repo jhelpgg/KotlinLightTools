@@ -1,9 +1,12 @@
 package fr.jhelp.kotlinLigthTools.promise
 
+import fr.jhelp.kotlinLight.TestCaseClass
 import fr.jhelp.kotlinLigthTools.atomic.AtomicInt
 import fr.jhelp.kotlinLigthTools.atomic.AtomicReference
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+
+@TestCaseClass
 
 class PromiseFutureTests
 {
