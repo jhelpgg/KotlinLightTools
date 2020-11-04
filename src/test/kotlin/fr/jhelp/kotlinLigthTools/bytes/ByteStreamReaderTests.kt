@@ -514,6 +514,12 @@ class ByteStreamReaderTests
             data.append(0x9A.toByte())
             data.append(0x44.toByte())
 
+            // 0
+            data.append(0.toByte())
+            data.append(0.toByte())
+            data.append(0.toByte())
+            data.append(0.toByte())
+
             val byteStreamReader = ByteStreamReader(data, false)
             @Try var byte = byteStreamReader.readFloat()
             Assertions.assertEquals(1f, byte)
@@ -521,6 +527,8 @@ class ByteStreamReaderTests
             Assertions.assertEquals(-1234.5678f, byte)
             @Try byte = byteStreamReader.readFloat()
             Assertions.assertEquals(1234.5678f, byte)
+            @Try byte = byteStreamReader.readFloat()
+            Assertions.assertEquals(0f, byte)
         }
         catch (error: Exception)
         {

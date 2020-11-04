@@ -1,5 +1,6 @@
 package fr.jhelp.kotlinLigthTools.promise
 
+import fr.jhelp.kotlinLight.Locker
 import fr.jhelp.kotlinLight.TestCaseClass
 import fr.jhelp.kotlinLigthTools.atomic.AtomicInt
 import fr.jhelp.kotlinLigthTools.atomic.AtomicReference
@@ -63,13 +64,15 @@ class PromiseFutureTests
         val promise = Promise<String>()
         promise.register { cancelReason -> reason.set(cancelReason) }
         val future = promise.getFuture()
+        val locker = Locker()
         Assertions.assertEquals(FutureStatus.COMPUTING, future.status())
         Assertions.assertNull(future.getResult())
         Assertions.assertNull(future.getCancelReason())
         Assertions.assertEquals("", future.getError())
 
         future.cancel("Reason")
-        Thread.sleep(512)
+        future.then { locker.unlock() }
+        locker.lock()
         Assertions.assertEquals(FutureStatus.CANCELED, future.status())
         Assertions.assertNull(future.getResult())
         Assertions.assertEquals("Reason", future.getCancelReason())
@@ -90,14 +93,16 @@ class PromiseFutureTests
         val intermediate = AtomicInt(-1)
         val result = AtomicInt(-1)
         val promise = Promise<Int>()
+        val locker = Locker()
         promise.getFuture()
             .andThen { number ->
                 intermediate.set(number)
                 100 / number
             }
             .andThen { number -> result.set(number) }
+            .then { locker.unlock() }
         promise.result(4)
-        Thread.sleep(512)
+        locker.lock()
         Assertions.assertEquals(4, intermediate.get())
         Assertions.assertEquals(25, result.get())
     }
@@ -108,14 +113,16 @@ class PromiseFutureTests
         val intermediate = AtomicInt(-1)
         val result = AtomicInt(-1)
         val promise = Promise<Int>()
+        val locker = Locker()
         promise.getFuture()
             .andThen { number ->
                 intermediate.set(number)
                 100 / number
             }
             .andThen { number -> result.set(number) }
+            .then { locker.unlock() }
         promise.result(0)
-        Thread.sleep(512)
+        locker.lock()
         Assertions.assertEquals(0, intermediate.get())
         Assertions.assertEquals(-1, result.get())
     }
@@ -126,6 +133,7 @@ class PromiseFutureTests
         val intermediate = AtomicInt(-1)
         val result = AtomicInt(-1)
         val promise = Promise<Int>()
+        val locker = Locker()
         promise.getFuture()
             .then { futureNumber ->
                 val number = futureNumber.getResult()!!
@@ -136,8 +144,9 @@ class PromiseFutureTests
                 val number = futureNumber.getResult()!!
                 result.set(number)
             }
+            .then { locker.unlock() }
         promise.result(4)
-        Thread.sleep(512)
+        locker.lock()
         Assertions.assertEquals(4, intermediate.get())
         Assertions.assertEquals(25, result.get())
     }
@@ -148,6 +157,7 @@ class PromiseFutureTests
         val intermediate = AtomicInt(-1)
         val error = AtomicReference<String>(null)
         val promise = Promise<Int>()
+        val locker = Locker()
         promise.getFuture()
             .then { futureNumber ->
                 val number = futureNumber.getResult()!!
@@ -157,8 +167,9 @@ class PromiseFutureTests
             .then { futureNumber ->
                 error.set(futureNumber.getError())
             }
+            .then { locker.unlock() }
         promise.result(0)
-        Thread.sleep(512)
+        locker.lock()
         Assertions.assertEquals(0, intermediate.get())
         val errorMessage = error.get()
         Assertions.assertNotNull(errorMessage)
@@ -170,7 +181,9 @@ class PromiseFutureTests
         val promise = Promise<Future<String>>()
         promise.result(futureValue("Hello"))
         val future = unwrap(promise.getFuture())
-        Thread.sleep(512)
+        val locker = Locker()
+        future.then { locker.unlock() }
+        locker.lock()
         Assertions.assertEquals("Hello", future.getResult())
     }
 }
