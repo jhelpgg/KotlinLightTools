@@ -3,6 +3,7 @@ package fr.jhelp.kotlinLigthTools.math
 import fr.jhelp.kotlinLight.ImportSwift
 import fr.jhelp.kotlinLight.guard
 import fr.jhelp.kotlinLigthTools.exceptions.IllegalArgumentException
+import java.lang.Math.pow
 import kotlin.math.floor
 import kotlin.math.log2
 import kotlin.math.max
@@ -60,7 +61,7 @@ fun floatToIntBytes(number: Float): Int
 
     val abs = absolute(number)
     val exponent = floor(log2(abs)).toInt() - 23
-    val mantis = floor(abs.toDouble() * Math.pow(2.0, -exponent.toDouble())).toInt()
+    val mantis = floor(abs.toDouble() * pow(2.0, -exponent.toDouble())).toInt()
     var response = 0L
 
     if (sign < 0)
@@ -144,7 +145,7 @@ fun floatFromIntBytes(intBytes: Int): Float
         mantis = mantis or 0x800000
     }
 
-    val power = Math.pow(2.0, (exponent - 150).toDouble()).toFloat()
+    val power = pow(2.0, (exponent - 150).toDouble()).toFloat()
     return sign * mantis.toFloat() * power
 
 }

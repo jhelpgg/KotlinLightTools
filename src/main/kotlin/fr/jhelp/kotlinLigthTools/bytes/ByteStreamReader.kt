@@ -56,6 +56,11 @@ class ByteStreamReader
         @Try this.checkEnoughData(1)
         val value = this.data[this.position].toInt()
         this.position++
+
+        if (value > 0x7F)
+        {
+            return value - 0x100
+        }
         return value
     }
 
@@ -68,17 +73,14 @@ class ByteStreamReader
     @Throws
     fun readInt16(): Int
     {
-        @Try this.checkEnoughData(2)
-        val byte1 = this.data[this.position].toInt()
-        val byte2 = this.data[this.position + 1].toInt()
-        this.position += 2
+        @Try val value = this.readUInt16()
 
-        if (this.bigEndian)
+        if (value > 0x7FFF)
         {
-            return (byte1 shl 8) or (byte2 and 0xFF)
+            return value - 0x10000
         }
 
-        return (byte2 shl 8) or (byte1 and 0xFF)
+        return value
     }
 
     @Throws
@@ -100,25 +102,7 @@ class ByteStreamReader
     @Throws
     fun readInt32(): Int
     {
-        @Try this.checkEnoughData(4)
-        val byte1 = this.data[this.position].toInt()
-        val byte2 = this.data[this.position + 1].toInt()
-        val byte3 = this.data[this.position + 2].toInt()
-        val byte4 = this.data[this.position + 3].toInt()
-        this.position += 4
-
-        if (this.bigEndian)
-        {
-            var result = byte1 shl 24
-            result = result or ((byte2 and 0xFF) shl 16)
-            result = result or ((byte3 and 0xFF) shl 8)
-            return result or (byte4 and 0xFF)
-        }
-
-        var result = byte4 shl 24
-        result = result or ((byte3 and 0xFF) shl 16)
-        result = result or ((byte2 and 0xFF) shl 8)
-        return result or (byte1 and 0xFF)
+        @Try return this.readUInt32().toInt()
     }
 
     @Throws
